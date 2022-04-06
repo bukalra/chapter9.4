@@ -21,18 +21,17 @@ def books_list():
     error = ""
     if request.method == "POST":
         if form.validate_on_submit():
-            try:
-                updated_fd = form.data
+            updated_fd = form.data
+            books = books.all()
+            if books:
+                print(books.all()[-1]['id'])
                 updated_fd['id'] = books.all()[-1]['id'] + 1
-                books.create(updated_fd)
-                books.save_all() 
-            except:
-                updated_fd = form.data
-                updated_fd['id'] = 1
-                books.create(updated_fd)
-                books.save_all()
-  
+            else:
+                updated_fd['id'] = 0
+            books.create(updated_fd)
+            books.save_all() 
         return redirect(url_for("books_list"))
+            
     return render_template("books.html",form=form, books=books.all(), error=error)
 
 @app.route("/book/<int:book_id>/", methods=["GET", "POST"])
