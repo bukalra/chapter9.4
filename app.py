@@ -1,14 +1,15 @@
-from flask import Flask, request, render_template, redirect, url_for
-
 from forms import TodoForm
 from models import books
-
-from flask import Flask, jsonify
-from models import books
-from models import api
-from flask import abort
-from flask import make_response
-from flask import request
+from flask import (
+    abort,
+    Flask,
+    jsonify,
+    make_response,
+    request,
+    render_template,
+    redirect,
+    url_for,
+)
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "nininini"
@@ -22,10 +23,9 @@ def books_list():
     if request.method == "POST":
         if form.validate_on_submit():
             updated_fd = form.data
-            books = books.all()
-            if books:
-                print(books.all()[-1]['id'])
-                updated_fd['id'] = books.all()[-1]['id'] + 1
+            all_books = books.all()
+            if all_books:
+                updated_fd['id'] = all_books[-1]['id'] + 1
             else:
                 updated_fd['id'] = 0
             books.create(updated_fd)
@@ -66,7 +66,7 @@ def create_book():
         'date': request.json.get('date', ""),
         'genre': request.json.get('genre', "")
     }
-    api.create_api(book)
+    books.create_api(book)
     return jsonify({'book': book}), 201
 
 @app.route("/api/v1/books/", methods=["GET"])
@@ -75,7 +75,7 @@ def books_list_api_v1():
 
 @app.route("/api/v1/books/<int:book_id>", methods=["GET"])
 def get_book(book_id):
-    book = api.get_api(book_id)
+    book = books.get_api(book_id)
     if not book:
         abort(404)
     return jsonify({"book": book})
@@ -83,7 +83,7 @@ def get_book(book_id):
 @app.route("/api/v1/books/<int:book_id>", methods=['DELETE'])
 def delete_book(book_id):
     print(book_id)
-    result = api.delete_api(book_id)
+    result = books.delete_api(book_id)
     if not result:
         abort(404)
     return jsonify({'result': result})
@@ -107,7 +107,7 @@ def update_book(book_id):
         'description': data.get('description', book['description']),
         'done': data.get('done', book['done'])
     }
-    api.update_api(book_id, book)
+    books.update_api(book_id, book)
     return jsonify({'book': book})
 
 if __name__ == "__main__":

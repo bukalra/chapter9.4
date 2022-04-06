@@ -27,8 +27,6 @@ class Books:
         self.books[id] = data
         self.save_all()
 
-class Api(Books):
-
     def get_api(self, id):
         book = [book for book in self.all() if book['id'] == id]
         if book:
@@ -57,5 +55,3 @@ class Api(Books):
         return False
 
 books = Books()
-api = Api()
-
